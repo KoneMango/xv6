@@ -2,17 +2,18 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 
-//sleep.c
-int main(int argc, char *argv[])
+#define STDIN_FILENO  0
+#define STDOUT_FILENO 1
+#define STDDER_FILENO 2
+
+int main(int argc, char* argv[])
 {
-    int n;
-    if (argc < 2)
+    if (argc != 2)
     {
-        fprintf(2, "usage: sleep n\n");
+        fprintf(STDDER_FILENO, "usage: sleep <number>\n");
         exit(1);
     }
-    n = atoi(argv[1]);
-    sleep(n);
+    int number = atoi(argv[1]);
+    sleep(number);
     exit(0);
 }
-
