@@ -16,6 +16,4 @@ int main(int argc, char* argv[])
     int number = atoi(argv[1]);
     sleep(number);
     exit(0);
-
-    
-
+}
