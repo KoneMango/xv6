@@ -9,7 +9,8 @@ int main(int argc, char* argv[])
     char buffer[20];
 
     pid = fork();
-    int fd1[2],fd2[2];
+    int fd1[2];
+    pipe(fd1);
     if (pid == 0) // child process(read)
     {
         close(fd1[1]);
