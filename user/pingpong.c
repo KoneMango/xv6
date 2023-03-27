@@ -14,16 +14,25 @@ int main(int argc, char* argv[])
 
     if (pid == 0) // child process(read)
     {
-        close(fd1[1]);
         read(fd1[0], buffer, sizeof(buffer));
+        if (buffer[0] == 'h')
+        {
+            printf("%d:received ping",pid);
+        }
         close(fd1[0]);
-        printf("%s", buffer);
+        write(fd1[1], "p", 1);
+        close(fd1[1]);
         exit(0);
     } else  // parent process(write)
     {
-        close(fd1[0]);
         write(fd1[1], "h", 1);
         close(fd1[1]);
+        read(fd1[0], buffer, sizeof(buffer));
+        if (buffer[0] == 'h')
+        {
+            printf("%d:received pong",pid);
+        }
+        close(fd1[0]);
         wait(0);
         exit(0);
     }
