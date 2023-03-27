@@ -1,0 +1,30 @@
+#include "kernel/types.h"
+#include "kernel/stat.h"
+#include "user/user.h"
+#include <sys/types.h>
+
+int main(int argc, char* argv[])
+{
+    pid_t pid;
+    char buffer[20];
+
+    pid = fork();
+    int fd1[2],fd2[2];
+    if (pid == 0) // child process(read)
+    {
+        close(fd1[1]);
+        read(fd1[0], buffer, sizeof(buffer));
+        close(fd1[0]);
+        printf("%s", buffer);
+        exit(0);
+    } else  // parent process(write)
+    {
+        close(fd1[0]);
+        write(fd1[1], "h", 1);
+        close(fd1[1]);
+        exit(0);
+    }
+
+    return 0;
+
+}

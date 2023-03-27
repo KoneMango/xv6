@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 {
     if (argc != 2)
     {
-        fprintf(STDDER_FILENO, "usage: sleep <number>\n");
+        fprintf(STDDER_FILENO, "usage: sleep <number> eg: sleep 10\n");
         exit(1);
     }
     int number = atoi(argv[1]);
