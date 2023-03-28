@@ -19,7 +19,9 @@ int main(int argc, char* argv[]){
     pid=fork();
     if (pid == 0) // child process(read)
     {
-        read(fd[0][0], arr[10], sizeof(arr[10]));
+        //读取管道里的数组
+        read(fd[0][0], arr, 100);
+        
         
         exit(0);
     } 
