@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
         pid_t pid2 = getpid();
         if (buffer[0] == 'h')
         {
-            printf("%d:received ping\n",pid);
+            printf("%d:received ping\n",pid2);
         }
         close(fd1[0]);
         write(fd1[1], "p", 1);
@@ -27,12 +27,13 @@ int main(int argc, char* argv[])
         exit(0);
     } else  // parent process(write)
     {
+        pid_t pid_parent = getpid();
         write(fd1[1], "h", 1);
         close(fd1[1]);
         read(fd1[0], buffer, sizeof(buffer));
         if (buffer[0] == 'p')
         {
-            printf("%d:received pong\n",pid);
+            printf("%d:received pong\n",pid_parent);
         }
         close(fd1[0]);
         wait(0);
