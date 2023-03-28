@@ -24,6 +24,11 @@ int main(int argc, char* argv[]){
         read(fd[0][0], arr, 100);
         close(fd[0][0]);
         close(fd[0][1]);
+        for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0])-5; i++)
+        {
+            printf("prime %d\n", arr[i]);
+        }
+        
         exit(0);
     } 
     else  // parent process(write)
@@ -42,10 +47,6 @@ int main(int argc, char* argv[]){
         write(fd[0][1], arr, 100);
         close(fd[0][1]);
         close(fd[0][0]);
-        for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0])-5; i++)
-        {
-            printf("prime %d\n", arr[i]);
-        }
         wait(0);
         exit(0);
     }
