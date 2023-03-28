@@ -26,7 +26,7 @@ int main(int argc, char* argv[]){
     } 
     else  // parent process(write)
     {
-        for (size_t i = 0; i < sizeof(arr); i++)
+        for (size_t i = 0; i < sizeof(arr)-5; i++)
         {
             if (arr[i] % arr[0] == 0)
             {
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
             }
         }
         write(fd[0][1], arr, 100);
-        for (size_t i = 0; i < sizeof(arr); i++)
+        for (size_t i = 0; i < sizeof(arr)-5; i++)
         {
             printf("prime %d\n", arr[i]);
         }
