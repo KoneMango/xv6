@@ -14,7 +14,7 @@ int main(int argc, char* argv[]){
     // 初始化数组
     for (int i = 2; i < 35; i++) 
     {
-        arr[i-2] = i + 1;
+        arr[i-2] = i;
     }
 
     pid=fork();
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]){
         close(fd[0]);
         for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
         {
-            //printf("prime %d\n", arr[i]);
+            printf("prime %d\n", arr[i]);
         }
         pid = fork();
         exit(0);
@@ -45,5 +45,6 @@ int main(int argc, char* argv[]){
         close(fd[1]);
         wait(0);
         exit(0);
+
     }
 }
