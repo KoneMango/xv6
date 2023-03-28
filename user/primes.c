@@ -31,7 +31,7 @@ int main(int argc, char* argv[]){
     } 
     else  // parent process(write)
     {
-        close(fd[0]);
+        close(fd[0][0]);
         for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
         {
             if (arr[i] != 0)
@@ -46,8 +46,8 @@ int main(int argc, char* argv[]){
                 }
             }
         }
-        write(fd[1], arr, sizeof(arr));
-        close(fd[1]);
+        write(fd[0][1], arr, sizeof(arr));
+        close(fd[0][1]);
         wait(0);
         exit(0);
     }
