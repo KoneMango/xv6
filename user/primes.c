@@ -27,23 +27,17 @@ int main(int argc, char* argv[]){
         {
             printf("prime %d\n", arr[i]);
         }
+        pid = fork();
         exit(0);
     } 
     else  // parent process(write)
     {
         close(fd[0]);
-        for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
+        for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0])-5; i++)
         {
-            if (arr[i] != 0)
+            if (arr[i]%arr[0] ==0)
             {
-                int prime = arr[i];
-                for (size_t j = i + 1; j < sizeof(arr) / sizeof(arr[0]); j++)
-                {
-                    if (arr[j] % prime == 0)
-                    {
-                        arr[j] = 0;
-                    }
-                }
+                arr[i] = arr[i+1];
             }
         }
         write(fd[1], arr, sizeof(arr));
