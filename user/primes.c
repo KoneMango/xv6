@@ -31,20 +31,23 @@ int main(int argc, char* argv[]){
     } 
     else  // parent process(write)
     {
-        close(fd[0][0]);
-        for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0])-5; i++)
+        close(fd[0]);
+        for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
         {
-            if (arr[i] % arr[0] == 0)
+            if (arr[i] != 0)
             {
-                //在数组中去除arr[i]
-                for (size_t j = i; j < sizeof(arr) / sizeof(arr[0])-5; j++)
+                int prime = arr[i];
+                for (size_t j = i + 1; j < sizeof(arr) / sizeof(arr[0]); j++)
                 {
-                    arr[j] = arr[j + 1];
+                    if (arr[j] % prime == 0)
+                    {
+                        arr[j] = 0;
+                    }
                 }
             }
         }
-        write(fd[0][1], arr, sizeof(arr));
-        close(fd[0][1]);
+        write(fd[1], arr, sizeof(arr));
+        close(fd[1]);
         wait(0);
         exit(0);
     }
