@@ -25,14 +25,15 @@ int main(int argc, char* argv[]){
         close(fd[0]);
         for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
         {
-            printf("prime %d\n", arr[i]);
+            //printf("prime %d\n", arr[i]);
         }
-        // pid = fork();
+        pid = fork();
         exit(0);
     } 
     else  // parent process(write)
     {
         close(fd[0]);
+        printf("%d",arr[0]);
         for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0])-5; i++)
         {
             if (arr[i]%arr[0] ==0)
