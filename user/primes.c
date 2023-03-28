@@ -22,6 +22,7 @@ int main(int argc, char* argv[]){
     {
         //读取管道里的数组
         read(fd[0][0], arr, 100);
+        close(fd[0][0]);
         exit(0);
     } 
     else  // parent process(write)
@@ -38,11 +39,11 @@ int main(int argc, char* argv[]){
             }
         }
         write(fd[0][1], arr, 100);
+        close(fd[0][1]);
         for (size_t i = 0; i < sizeof(arr)-5; i++)
         {
             printf("prime %d\n", arr[i]);
         }
-
         wait(0);
         exit(0);
     }
