@@ -27,7 +27,7 @@ int main(int argc, char* argv[]){
         {
             printf("prime %d\n", arr[i]);
         }
-        pid = fork();
+        // pid = fork();
         exit(0);
     } 
     else  // parent process(write)
