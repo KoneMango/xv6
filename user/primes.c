@@ -8,12 +8,14 @@ int main(int argc, char* argv[]){
     pid_t pid;
     int fd[10][2];
     pid = fork();
-    int arr[35];
+
+    int arr[34];
     // 初始化数组
     for (int i = 2; i < 35; i++) 
     {
         arr[i] = i + 1;
     }
+
     pid=fork();
     if (pid == 0) // child process(read)
     {
@@ -35,7 +37,10 @@ int main(int argc, char* argv[]){
             }
         }
         write(fd[0][1], arr, 100);
-        printf(arr);
+        for (size_t i = 0; i < sizeof(arr); i++)
+        {
+            printf("prime %d\n", arr[i]);
+        }
 
         wait(0);
         exit(0);
