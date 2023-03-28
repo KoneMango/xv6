@@ -7,13 +7,14 @@
 int main(int argc, char* argv[]){
     pid_t pid;
     int fd[10][2];
+    pipe(fd[0]);
     pid = fork();
 
     int arr[34];
     // 初始化数组
     for (int i = 2; i < 35; i++) 
     {
-        arr[i] = i + 1;
+        arr[i-2] = i + 1;
     }
 
     pid=fork();
@@ -21,8 +22,6 @@ int main(int argc, char* argv[]){
     {
         //读取管道里的数组
         read(fd[0][0], arr, 100);
-        
-        
         exit(0);
     } 
     else  // parent process(write)
@@ -47,8 +46,4 @@ int main(int argc, char* argv[]){
         wait(0);
         exit(0);
     }
-
-
-
-
 }
