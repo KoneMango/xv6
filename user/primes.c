@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
     int fd[2];
     int index = 0;
-    pid_t pid;
+    pid_t pid = 1;
 
     while (arr[index] != 0 && arr[index] * arr[index] <= arr[sizeof(arr) / sizeof(arr[0]) - 1]) {
         pipe(fd);
