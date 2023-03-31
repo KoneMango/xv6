@@ -8,6 +8,7 @@ int main(int argc, char* argv[]){
     pid_t pid;
     int fd[2];
     pipe(fd);
+    int index = 0; 
     pid = fork();
 
     int arr[34];
@@ -22,29 +23,37 @@ int main(int argc, char* argv[]){
     {
         close(fd[1]);
         read(fd[0], arr, sizeof(arr));
-        close(fd[0]);
-        for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
+        for (size_t i = 1; i < sizeof(arr) / sizeof(arr[0]); i++)
         {
-            printf("prime %d\n", arr[i]);
+            if(arr[i]%arr[index]==0)
+            {
+                arr[i]=arr[i+1];
+            }
         }
-        pid = fork();
+        index ++;
+        printf("prime %d\n", arr[index]);
+        close(fd[0]);
+        // for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
+        // {
+        //     printf("prime %d\n", arr[i]);
+        // }
         exit(0);
     } 
     else  // parent process(write)
     {
         close(fd[0]);
-        printf("%d",arr[0]);
-        for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0])-5; i++)
-        {
-            if (arr[i]%arr[0] ==0)
-            {
-                arr[i] = arr[i+1];
-            }
-        }
+        // printf("%d",arr[0]);
+        // for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0])-5; i++)
+        // {
+        //     if (arr[i]%arr[0] ==0)
+        //     {
+        //         arr[i] = arr[i+1];
+        //     }
+        // }
         write(fd[1], arr, sizeof(arr));
         close(fd[1]);
+        pid = fork();
         wait(0);
         exit(0);
-
     }
 }
