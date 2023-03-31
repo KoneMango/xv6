@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
             }
         }
         index ++;
-        printf("prime %d\n", arr[index]);
+        printf("%d", arr[index]);
         close(fd[0]);
         // for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
         // {
