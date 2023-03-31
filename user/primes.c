@@ -8,8 +8,9 @@ int main(int argc, char* argv[]){
     pid_t pid;
     int fd[2];
     pipe(fd);
-    int index = 0; 
     pid = fork();
+    int index = 0; 
+
 
     int arr[34];
     // 初始化数组
