@@ -24,15 +24,15 @@ int main(int argc, char* argv[]){
     {
         close(fd[1]);
         read(fd[0], arr, sizeof(arr));
-        for (size_t i = 1; i < sizeof(arr) / sizeof(arr[0]); i++)
+        for (size_t i = 1 ; i < sizeof(arr) / sizeof(arr[0]); i++)
         {
             if(arr[i]%arr[index]==0)
             {
                 arr[i]=arr[i+1];
             }
         }
-        index ++;
         printf("%d", arr[index]);
+        index ++;
         close(fd[0]);
         // for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
         // {
