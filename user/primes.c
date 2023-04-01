@@ -31,7 +31,7 @@ int main(int argc, char* argv[]){
                 arr[i]=arr[i+1];
             }
         }
-        printf("%d", arr[index]);
+        printf("%d\n", arr[index]);
         index ++;
         close(fd[0]);
         exit(0);
