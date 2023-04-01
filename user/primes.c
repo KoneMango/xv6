@@ -32,6 +32,12 @@ int main(int argc, char* argv[]){
             }
         }
         printf("%d\n", arr[index]);
+        printf("%d\n", arr[index+1]);
+        printf("%d\n", arr[index+2]);
+        printf("%d\n", arr[index+3]);
+        printf("%d\n", arr[index+4]);
+        printf("%d\n", arr[index+5]);
+        printf("%d\n", arr[index+6]);
         index ++;
         close(fd[0]);
         exit(0);
