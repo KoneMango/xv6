@@ -40,7 +40,7 @@ int main(int argc, char* argv[]){
     {
         close(fd[0]);
         write(fd[1], arr, sizeof(arr));
-        printf("%d", arr);
+        printf("%d", arr[0]);
         close(fd[1]);
         pid = fork();
         wait(0);
