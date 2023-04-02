@@ -115,6 +115,7 @@ void printPrime(int *input, int count)
         count = 0;
 
         int *new_input = (int *)malloc(count * sizeof(int)); // 分配新数组的空间
+        int *new_input_head = new_input; // 保存新数组的头指针
         // 从管道中读取数据，直到管道为空
         while (read(p[0], buff, 4) != 0) {
             int temp = *((int *)buff);
@@ -123,18 +124,15 @@ void printPrime(int *input, int count)
             // 如果当前数不能被素数整除，将其存入数组，并更新count
             if (temp % prime) // 不能被整除(好的，留下)
             {
-                new_input[count] = temp;
+                *new_input = temp; // 保存到数组中，把好的数保存到数组中
                 new_input++;
                 count++;
-                // *new_input = temp; // 保存到数组中，把好的数保存到数组中
-                // new_input++;
-                // count++;
             }
         }
-        free(new_input);
-        // 递归调用printPrime函数处理剩余的数
-        printPrime(new_input - count, count);
 
+        // 递归调用printPrime函数处理剩余的数
+        printPrime(new_input_head - count, count);
+        free(new_input);
         // 父进程关闭读端并等待子进程退出
         close(p[0]);
         wait(0);
