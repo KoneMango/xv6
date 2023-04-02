@@ -124,8 +124,8 @@ void printPrime(int *input, int count)
             // 如果当前数不能被素数整除，将其存入数组，并更新count
             if (temp % prime) // 不能被整除(好的，留下)
             {
-                *new_input = temp; // 保存到数组中，把好的数保存到数组中
-                new_input++;
+                *new_input_head = temp; // 保存到数组中，把好的数保存到数组中
+                new_input_head++;
                 count++;
             }
         }
