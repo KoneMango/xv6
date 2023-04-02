@@ -108,10 +108,6 @@ void find(char *path, char *fileName)
   switch (st.type)
   {
   case T_FILE:
-    if (strcmp(fmtname(path), fileName) == 0)
-    {
-      printf("%s\n", path);
-    }
     break;
 
   case T_DIR:
