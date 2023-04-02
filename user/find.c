@@ -47,7 +47,7 @@ void find(char *path , char *fileName)
   case T_FILE:
     if(strcmp(fmtname(path),fileName) == 0)
     {
-        printf("%s\n", path);
+        printf("%s\n", fileName);
     }
     break;
 
