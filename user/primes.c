@@ -114,20 +114,23 @@ void printPrime(int *input, int count)
         // 重置count为0，用于统计剩余未被筛选的数
         count = 0;
 
+        int *new_input = (int *)malloc(count * sizeof(int)); // 分配新数组的空间
         // 从管道中读取数据，直到管道为空
         while (read(p[0], buff, 4) != 0) {
             int temp = *((int *)buff);
 
+
             // 如果当前数不能被素数整除，将其存入数组，并更新count
-            if (temp % prime) {
-                *input = temp;
-                input++;
+            if (temp % prime) // 不能被整除(好的，留下)
+            {
+                *new_input = temp; // 保存到数组中，把好的数保存到数组中
+                new_input++;
                 count++;
             }
         }
 
         // 递归调用printPrime函数处理剩余的数
-        printPrime(input - count, count);
+        printPrime(new_input - count, count);
 
         // 父进程关闭读端并等待子进程退出
         close(p[0]);
