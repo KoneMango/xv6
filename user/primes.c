@@ -72,51 +72,77 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 
+// printPrime函数使用递归方法筛选出素数并打印
 void printPrime(int *input, int count)
 {
-    int idx = 0;
-    while (count != 0)
+    // 如果count为0，则返回
+    if (count == 0) {
+        return;
+    }
+
+    // 创建管道
+    int p[2], i = 0, prime = *input;
+    pipe(p);
+
+    // 创建缓冲区，用于从管道中读取数据
+    char buff[4];
+
+    // 打印当前素数
+    printf("prime %d\n", prime);
+
+    // 创建子进程
+    if (fork() == 0) 
     {
-        int p[2], i = 0, prime = input[idx];
-        pipe(p);
-        char buff[4];
-        printf("prime %d\n", prime);
-        if (fork() == 0)
-        {
-            close(p[0]);
-            for (; i < count; i++)
-            {
-                write(p[1], (char *)(input + i), 4);
-            }
-            close(p[1]);
-            exit(0);
+        // 子进程关闭读端
+        close(p[0]);
+
+        // 将当前数组中的所有数写入管道
+        for (; i < count; i++) {
+            write(p[1], (char *)(input + i), 4);
         }
-        else
-        {
-            close(p[1]);
-            count = 0;
-            while (read(p[0], buff, 4) != 0)
-            {
-                int temp = *((int *)buff);
-                if (temp % prime)
-                {
-                    input[++idx] = temp;
-                    count++;
-                }
+
+        // 子进程关闭写端，并退出
+        close(p[1]);
+        exit(0);
+    } 
+    //如果是父进程的话
+    else 
+    {
+        // 父进程关闭写端
+        close(p[1]);
+
+        // 重置count为0，用于统计剩余未被筛选的数
+        count = 0;
+
+        // 从管道中读取数据，直到管道为空
+        while (read(p[0], buff, 4) != 0) {
+            int temp = *((int *)buff);
+
+            // 如果当前数不能被素数整除，将其存入数组，并更新count
+            if (temp % prime) {
+                *input = temp;
+                input++;
+                count++;
             }
-            close(p[0]);
-            wait(0);
         }
+
+        // 递归调用printPrime函数处理剩余的数
+        printPrime(input - count, count);
+
+        // 父进程关闭读端并等待子进程退出
+        close(p[0]);
+        wait(0);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+    // 创建一个长度为34的数组，用于存放2至35的整数
     int input[34], i = 0;
-    for (; i < 34; i++)
-    {
+    for (; i < 34; i++) {
         input[i] = i + 2;
     }
+
+    // 调用printPrime函数处理整数数组
     printPrime(input, 34);
     exit(0);
 }
