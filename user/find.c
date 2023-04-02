@@ -47,7 +47,7 @@ void find(char *path , char *fileName)
   case T_FILE:
     if(strcmp(fmtname(path),fileName) == 0)
     {
-        printf("%s\n", fmtname(path));
+        printf("%s\n", path);
     }
     break;
 
@@ -68,7 +68,7 @@ void find(char *path , char *fileName)
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-      printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
+    //   printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
     }
     break;
   }
