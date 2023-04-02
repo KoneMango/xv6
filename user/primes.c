@@ -74,35 +74,33 @@
 
 void printPrime(int *input, int count)
 {
-  int p[2], i = 0;
-  int prime = input[0];
+  if (count == 0) {
+    return;
+  }
+  int p[2], i = 0, prime = *input;
   pipe(p);
+  char buff[4];
   printf("prime %d\n", prime);
-
-  while (1) {
-    if (fork() == 0) {
-      close(p[0]);
-      for (; i < count; i++) {
-        write(p[1], (char *)(input + i), 4);
-      }
-      close(p[1]);
-      exit(0);
-    } else {
-      close(p[1]);
-      count = 0;
-      int temp;
-      while (read(p[0], (char *)&temp, 4) == 4) {
-        if (temp % prime) {
-          input[count++] = temp;
-        }
-      }
-      close(p[0]);
-      if (count == 0) {
-        break;
-      }
-      prime = input[0];
-      i = 1;
-    }
+  if (fork() == 0) {
+	close(p[0]);
+	for (; i < count; i++) {
+	  write(p[1], (char *)(input + i), 4);
+	}
+	close(p[1]);
+	exit(0);
+  } else {
+	close(p[1]);
+	count = 0;
+	while (read(p[0], buff, 4) != 0) {
+	  int temp = *((int *)buff);
+	  if (temp % prime) {
+	    *input++ = temp;
+		count++;
+	  }
+	}
+	printPrime(input - count, count);
+	close(p[0]);
+	wait(0);
   }
 }
 
