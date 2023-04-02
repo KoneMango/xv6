@@ -19,37 +19,51 @@ int main(int argc, char* argv[]){
         arr[i-2] = i;
     }
 
-    pid=fork();
-    if (pid == 0) // child process(read)
+    while(index < 34)
     {
-        close(fd[1]);
-        read(fd[0], arr, sizeof(arr));
-        for (size_t i = 1 ; i < sizeof(arr) / sizeof(arr[0]); i++)
+        pid=fork();
+        if (pid == 0) // child process(read)
         {
-            if(arr[i]%arr[index]==0)
+            close(fd[1]);
+            read(fd[0], arr, sizeof(arr));
+            // for (size_t i = 1 ; i < sizeof(arr) / sizeof(arr[0]); i++)
+            // {
+            //     if(arr[i]%arr[index]==0)
+            //     {
+            //         arr[i]=arr[i+1];
+            //     }
+            // }
+            
+            //筛选出不是质数的数，并去除
+            for (size_t i = 1 ; i < sizeof(arr) / sizeof(arr[0]); i++)
             {
-                arr[i]=arr[i+1];
+                if(arr[i]%arr[index]==0)
+                {
+                    arr[i]=arr[i+1];
+                }
             }
+            printf("%d\n", arr[index]);
+            printf("%d\n", arr[index+1]);
+            printf("%d\n", arr[index+2]);
+            printf("%d\n", arr[index+3]);
+            printf("%d\n", arr[index+4]);
+            printf("%d\n", arr[index+5]);
+            printf("%d\n", arr[index+6]);
+            index ++;
+            close(fd[0]);
+            exit(0);
+        } 
+        else  // parent process(write)
+        {
+            close(fd[0]);
+            write(fd[1], arr, sizeof(arr));
+            // printf("%d", arr[0]);
+            close(fd[1]);
+            pid = fork();
+            wait(0);
+            exit(0);
         }
-        printf("%d\n", arr[index]);
-        printf("%d\n", arr[index+1]);
-        printf("%d\n", arr[index+2]);
-        printf("%d\n", arr[index+3]);
-        printf("%d\n", arr[index+4]);
-        printf("%d\n", arr[index+5]);
-        printf("%d\n", arr[index+6]);
-        index ++;
-        close(fd[0]);
-        exit(0);
-    } 
-    else  // parent process(write)
-    {
-        close(fd[0]);
-        write(fd[1], arr, sizeof(arr));
-        // printf("%d", arr[0]);
-        close(fd[1]);
-        pid = fork();
-        wait(0);
-        exit(0);
+
     }
+
 }
