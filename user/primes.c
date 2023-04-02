@@ -74,48 +74,49 @@
 
 void printPrime(int *input, int count)
 {
-  int p[2], i = 0;
-  int prime = input[0];
-  pipe(p);
-  printf("prime %d\n", prime);
-
-  while (1) {
-    if (fork() == 0) {
-      close(p[0]);
-      for (; i < count; i++) {
-        write(p[1], (char *)(input + i), 4);
-      }
-      close(p[1]);
-      exit(0);
-    } else {
-      close(p[1]);
-      count = 0;
-      int temp;
-      while (read(p[0], (char *)&temp, 4) == 4) {
-        if (temp % prime) {
-          input[count++] = temp;
+    int idx = 0;
+    while (count != 0)
+    {
+        int p[2], i = 0, prime = input[idx];
+        pipe(p);
+        char buff[4];
+        printf("prime %d\n", prime);
+        if (fork() == 0)
+        {
+            close(p[0]);
+            for (; i < count; i++)
+            {
+                write(p[1], (char *)(input + i), 4);
+            }
+            close(p[1]);
+            exit(0);
         }
-      }
-      if (count == 0) {
-        break;
-      }
-      for (i = 0; i < count; i++) {
-        printf("%d ", input[i]);
-      }
-      printf("\n");
-      prime = input[0];
-      i = 1;
+        else
+        {
+            close(p[1]);
+            count = 0;
+            while (read(p[0], buff, 4) != 0)
+            {
+                int temp = *((int *)buff);
+                if (temp % prime)
+                {
+                    input[++idx] = temp;
+                    count++;
+                }
+            }
+            close(p[0]);
+            wait(0);
+        }
     }
-    close(p[0]);
-    wait(0);
-  }
 }
 
-int main(int argc, char *argv[]) {
-  int input[34], i = 0;
-  for (; i < 34; i++) {
-    input[i] = i + 2;
-  }
-  printPrime(input, 34);
-  exit(0);
+int main(int argc, char *argv[])
+{
+    int input[34], i = 0;
+    for (; i < 34; i++)
+    {
+        input[i] = i + 2;
+    }
+    printPrime(input, 34);
+    exit(0);
 }
