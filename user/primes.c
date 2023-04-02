@@ -81,7 +81,8 @@ void printPrime(int *input, int count)
     }
 
     // 创建管道
-    int p[2], i = 0, prime = *input;
+    int p[2], i = 0;
+    int prime = *input;
     pipe(p);
 
     // 创建缓冲区，用于从管道中读取数据
@@ -114,7 +115,7 @@ void printPrime(int *input, int count)
         // 重置count为0，用于统计剩余未被筛选的数
         count = 0;
 
-        int *new_input = (int *)malloc(34 * sizeof(int)); // 分配新数组的空间
+        int *new_input = (int *)malloc(34 * sizeof(int)); // 分配新数组的空间 34个int
         int *new_input_head = new_input; // 保存新数组的头指针
         // 从管道中读取数据，直到管道为空
         while (read(p[0], buff, 4) != 0) {
