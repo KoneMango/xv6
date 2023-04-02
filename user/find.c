@@ -107,24 +107,37 @@ void find(char *path, char *fileName)
 
   switch (st.type)
   {
+    //如果是文件，就输出文件名
   case T_FILE:
+    if (strcmp(fmtname(path), fileName) == 0)
+    {
+      printf("%s\n", fileName);
+    }
     break;
-
+    //如果是文件夹，就递归
   case T_DIR:
     if (strlen(path) + 1 + DIRSIZ + 1 > sizeof buf)
     {
       printf("ls: path too long\n");
       break;
     }
+    //把文件名复制到buf里
     strcpy(buf, path);
+    //把buf的指针指向buf的最后一个字符
     p = buf + strlen(buf);
+    //把buf的最后一个字符改成/
     *p++ = '/';
+    //把buf的最后一个字符改成0
     while (read(fd, &de, sizeof(de)) == sizeof(de))
     {
+        //如果文件名为空，就跳过
       if (de.inum == 0)
         continue;
+        //把文件名复制到buf的最后一个字符后面
       memmove(p, de.name, DIRSIZ);
+      //把buf的最后一个字符改成0
       p[DIRSIZ] = 0;
+      //如果文件名是.或者..，就跳过
       if (stat(buf, &st) < 0)
       {
         printf("ls: cannot stat %s\n", buf);
@@ -137,6 +150,7 @@ void find(char *path, char *fileName)
           printf("%s\n", buf);
         }
       }
+      //如果文件名是.或者..，就跳过
       else if (st.type == T_DIR && strcmp(de.name, ".") != 0 && strcmp(de.name, "..") != 0)
       {
         find(buf, fileName);
