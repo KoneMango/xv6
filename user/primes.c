@@ -96,7 +96,6 @@ void printPrime(int *input, int count)
           input[count++] = temp;
         }
       }
-      close(p[0]);
       if (count == 0) {
         break;
       }
@@ -107,6 +106,8 @@ void printPrime(int *input, int count)
       prime = input[0];
       i = 1;
     }
+    close(p[0]);
+    wait(0);
   }
 }
 
