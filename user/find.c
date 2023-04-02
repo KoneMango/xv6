@@ -25,58 +25,133 @@ char* fmtname(char *path)
   return buf;
 }
 
-void find(char *path , char *fileName)
+// void find(char *path , char *fileName)
+// {
+//   char buf[512], *p;
+//   int fd;
+//   struct dirent de;
+//   struct stat st;
+
+//   if((fd = open(path, 0)) < 0){
+//     fprintf(2, "ls: cannot open %s\n", path);
+//     return;
+//   }
+
+//   if(fstat(fd, &st) < 0){
+//     fprintf(2, "ls: cannot stat %s\n", path);
+//     close(fd);
+//     return;
+//   }
+
+//   switch(st.type){
+//   case T_FILE:
+//     if(strcmp(fmtname(path),fileName) == 0)
+//     {
+//         printf("%s\n", fileName);
+//     }
+//     break;
+
+//   case T_DIR:
+//   //长度超了
+//     if(strlen(path) + 1 + DIRSIZ + 1 > sizeof buf){
+//       printf("ls: path too long\n");
+//       break;
+//     }
+//     //把文件名复制到buf里
+//     strcpy(buf, path);
+//     //把buf的指针指向buf的最后一个字符
+//     p = buf+strlen(buf);
+//     //把buf的最后一个字符改成/
+//     *p++ = '/';
+//     //把buf的最后一个字符改成0
+//     while(read(fd, &de, sizeof(de)) == sizeof(de)){
+//         //如果文件名为空，就跳过
+//       if(de.inum == 0)
+//         continue;
+//         //把文件名复制到buf的最后一个字符后面
+//       memmove(p, de.name, DIRSIZ);
+//       //把buf的最后一个字符改成0
+//       p[DIRSIZ] = 0;
+//         //如果文件名是.或者..，就跳过
+//       if(stat(buf, &st) < 0){
+//         printf("ls: cannot stat %s\n", buf);
+//         continue;
+//       }
+//         //如果文件名是.或者..，就跳过
+//        printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
+//     }
+//     break;
+//   }
+//   close(fd);
+// }
+
+void find(char *path, char *fileName)
 {
   char buf[512], *p;
   int fd;
   struct dirent de;
   struct stat st;
 
-  if((fd = open(path, 0)) < 0){
+  if ((fd = open(path, 0)) < 0)
+  {
     fprintf(2, "ls: cannot open %s\n", path);
     return;
   }
 
-  if(fstat(fd, &st) < 0){
+  if (fstat(fd, &st) < 0)
+  {
     fprintf(2, "ls: cannot stat %s\n", path);
     close(fd);
     return;
   }
 
-  switch(st.type){
+  switch (st.type)
+  {
   case T_FILE:
-    if(strcmp(fmtname(path),fileName) == 0)
+    if (strcmp(fmtname(path), fileName) == 0)
     {
-        printf("%s\n", fileName);
+      printf("%s\n", path);
     }
     break;
 
   case T_DIR:
-    if(strlen(path) + 1 + DIRSIZ + 1 > sizeof buf){
+    if (strlen(path) + 1 + DIRSIZ + 1 > sizeof buf)
+    {
       printf("ls: path too long\n");
       break;
     }
     strcpy(buf, path);
-    p = buf+strlen(buf);
+    p = buf + strlen(buf);
     *p++ = '/';
-    while(read(fd, &de, sizeof(de)) == sizeof(de)){
-      if(de.inum == 0)
+    while (read(fd, &de, sizeof(de)) == sizeof(de))
+    {
+      if (de.inum == 0)
         continue;
       memmove(p, de.name, DIRSIZ);
       p[DIRSIZ] = 0;
-      if(stat(buf, &st) < 0){
+      if (stat(buf, &st) < 0)
+      {
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-    //   printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
+      if (st.type == T_FILE)
+      {
+        if (strcmp(fmtname(buf), fileName) == 0)
+        {
+          printf("%s\n", buf);
+        }
+      }
+      else if (st.type == T_DIR && strcmp(de.name, ".") != 0 && strcmp(de.name, "..") != 0)
+      {
+        find(buf, fileName);
+      }
     }
     break;
   }
   close(fd);
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   int i;
 
