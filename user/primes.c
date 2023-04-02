@@ -114,7 +114,7 @@ void printPrime(int *input, int count)
         // 重置count为0，用于统计剩余未被筛选的数
         count = 0;
 
-        int *new_input = (int *)malloc(count * sizeof(int)); // 分配新数组的空间
+        int *new_input = (int *)malloc(34 * sizeof(int)); // 分配新数组的空间
         int *new_input_head = new_input; // 保存新数组的头指针
         // 从管道中读取数据，直到管道为空
         while (read(p[0], buff, 4) != 0) {
@@ -122,7 +122,7 @@ void printPrime(int *input, int count)
 
 
             // 如果当前数不能被素数整除，将其存入数组，并更新count
-            if (temp % prime) // 不能被整除(好的，留下)
+            if (temp % prime != 0) // 不能被整除(好的，留下)
             {
                 *new_input_head = temp; // 保存到数组中，把好的数保存到数组中
                 new_input_head++;
