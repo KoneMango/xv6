@@ -130,7 +130,7 @@ void printPrime(int *input, int count)
                 // count++;
             }
         }
-
+        free(new_input);
         // 递归调用printPrime函数处理剩余的数
         printPrime(new_input - count, count);
 
