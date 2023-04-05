@@ -1,6 +1,7 @@
 #include "kernel/types.h"
 #include "user/user.h"
 #include "kernel/fcntl.h"
+#include <ctype.h>
 
 #define MAXARG 32    //最大参数个数
 #define MAXARGLEN 64 //最大参数长度
@@ -35,7 +36,7 @@ int main(int argc, char *argv[]) {
                 }
                 nargs = 0; //清空参数列表，以便下一次使用
             } 
-        
+
             else if (isspace(buf[i])) { //如果遇到空格或制表符，则将它们转换为NULL字符，作为参数分隔符
                 buf[i] = 0;
             } else {
