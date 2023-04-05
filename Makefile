@@ -201,7 +201,7 @@ UPROGS=\
 	$U/_primes\
 	$U/_find\
 	$U/_xargs\
-	$U/_lc\
+	$U/-lc
 
 
 
