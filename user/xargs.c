@@ -18,9 +18,12 @@ int main(int argc, char *argv[]) {
     }
 
     //读取标准输入，并将每个字符串作为参数传递给指定命令
-    while ((n = read(0, buf, MAXARGLEN)) > 0) { //从标准输入读取数据
-        for (i = 0; i < n; i++) { //遍历缓冲区中的每个字符
-            if (buf[i] == '\n') { //如果遇到换行符，则将参数列表传递给指定命令
+    while ((n = read(0, buf, MAXARGLEN)) > 0) 
+    { //从标准输入读取数据
+        for (i = 0; i < n; i++) 
+        { //遍历缓冲区中的每个字符
+            if (buf[i] == '\n') 
+            { //如果遇到换行符，则将参数列表传递给指定命令
                 args[nargs] = 0; //最后一个参数必须为NULL
 
                 //子进程操作
@@ -37,14 +40,18 @@ int main(int argc, char *argv[]) {
                 nargs = 0; //清空参数列表，以便下一次使用
             } 
 
-            else if (isspace(buf[i])) { //如果遇到空格或制表符，则将它们转换为NULL字符，作为参数分隔符
+            else if ((buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\r' || buf[i] == '\n'))
+            { //如果遇到空格或制表符，则将它们转换为NULL字符，作为参数分隔符
                 buf[i] = 0;
-            } else {
+            }
+            else 
+            {
                 args[nargs++] = &buf[i]; //将参数添加到参数列表中
                 while (!isspace(buf[i]) && i < n) i++; //跳过单词，找到下一个分隔符
                 i--; //让下次循环能继续读取这个单词的字符
             }
-            if (nargs >= MAXARG) { //参数个数超过最大限制
+            if (nargs >= MAXARG)
+            { //参数个数超过最大限制
                 fprintf(2, "xargs: too many arguments\n");
                 exit(1);
             }
