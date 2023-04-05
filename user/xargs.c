@@ -40,14 +40,14 @@ int main(int argc, char *argv[]) {
                 nargs = 0; //清空参数列表，以便下一次使用
             } 
 
-            else if ((buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\r' || buf[i] == '\n'))
+            else if (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\r' || buf[i] == '\n')
             { //如果遇到空格或制表符，则将它们转换为NULL字符，作为参数分隔符
                 buf[i] = 0;
             }
             else 
             {
                 args[nargs++] = &buf[i]; //将参数添加到参数列表中
-                while (!isspace(buf[i]) && i < n) i++; //跳过单词，找到下一个分隔符
+                while (!(buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\r' || buf[i] == '\n') && i < n) i++; //跳过单词，找到下一个分隔符
                 i--; //让下次循环能继续读取这个单词的字符
             }
             if (nargs >= MAXARG)
