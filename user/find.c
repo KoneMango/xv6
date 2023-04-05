@@ -91,20 +91,20 @@ void find(char *path, char *fileName)
   int fd;
   struct dirent de;
   struct stat st;
-
+//打开文件夹
   if ((fd = open(path, 0)) < 0)
   {
     fprintf(2, "ls: cannot open %s\n", path);
     return;
   }
-
+//获取文件夹的信息
   if (fstat(fd, &st) < 0)
   {
     fprintf(2, "ls: cannot stat %s\n", path);
     close(fd);
     return;
   }
-
+//判断文件夹的类型
   switch (st.type)
   {
     //如果是文件，就输出文件名
@@ -143,6 +143,7 @@ void find(char *path, char *fileName)
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
+      //
       if (st.type == T_FILE)
       {
         if (strcmp(fmtname(buf), fileName) == 0)
