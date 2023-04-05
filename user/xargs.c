@@ -6,7 +6,8 @@
 #define MAXARG 32    //最大参数个数
 #define MAXARGLEN 64 //最大参数长度
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
     char *args[MAXARG]; //参数列表
     char buf[MAXARGLEN]; //缓冲区
     int nargs = 0; //参数个数
@@ -84,3 +85,4 @@ if (nargs > argc - 1) {
 }
 
 exit(0);
+}
