@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[]) 
 {
-    char *args[MAXARG]; //参数列表
+    char *args[MAXARG]; //新参数列表，给后面用的
     char buf[MAXARGLEN]; //缓冲区
     int nargs = 0; //参数个数
     int i, n;
@@ -19,33 +19,36 @@ int main(int argc, char *argv[])
     }
 
     // 将传入的命令参数添加到args数组中
+    // args里面放的是argv里面的参数
     for (nargs = 0; nargs < argc - 1; nargs++) {
         args[nargs] = argv[nargs + 1];
     }
 
-    //读取标准输入，并将每个字符串作为参数传递给指定命令
+    //读取标准输入，因为管道符把前面的输出塞进管道
     while ((n = read(0, buf, MAXARGLEN)) > 0) 
     { //从标准输入读取数据
         for (i = 0; i < n; i++) 
         { //遍历缓冲区中的每个字符
-            if (buf[i] == '\n') 
+
+            if (buf[i] == '\n')  //换行符号的话
             { //如果遇到换行符，则将参数列表传递给指定命令
                 buf[i] = 0; // 将换行符替换为NULL字符
                 args[nargs++] = &buf[i+1]; // 添加参数到参数列表中
                 args[nargs] = 0; // 最后一个参数必须为NULL
 
-                //子进程操作
-                if (fork() == 0) 
-                { //创建子进程，执行指定命令，并传递参数
-                    exec(args[0], args); //执行指定命令，并传递参数
-                    fprintf(2, "xargs: exec %s failed\n", args[0]); //指定命令执行失败
-                    exit(1);
-                } 
+                // //子进程操作
+                // if (fork() == 0) 
+                // { //创建子进程，执行指定命令，并传递参数
+                //     exec(args[0], args); //执行指定命令，并传递参数
+                //     fprintf(2, "xargs: exec %s failed\n", args[0]); //指定命令执行失败
+                //     exit(1);
+                // } 
 
-                //父进程操作
-                else {
-                    wait(0); //等待子进程结束
-                }
+                // //父进程操作
+                // else 
+                // {
+                //     wait(0); //等待子进程结束
+                // }
                 nargs--; // 移除添加的参数，以便下一次使用
             } 
 
@@ -68,7 +71,8 @@ int main(int argc, char *argv[])
 }
 
 // 如果缓冲区中仍有参数未处理，执行指定命令
-if (nargs > argc - 1) {
+if (nargs > argc - 1) 
+{
     args[nargs] = 0; // 最后一个参数必须为NULL
 
     // 子进程操作
