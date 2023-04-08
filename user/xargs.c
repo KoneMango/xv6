@@ -36,19 +36,6 @@ int main(int argc, char *argv[])
                 args[nargs++] = &buf[i+1]; // 添加参数到参数列表中
                 args[nargs] = 0; // 最后一个参数必须为NULL
 
-                // //子进程操作
-                // if (fork() == 0) 
-                // { //创建子进程，执行指定命令，并传递参数
-                //     exec(args[0], args); //执行指定命令，并传递参数
-                //     fprintf(2, "xargs: exec %s failed\n", args[0]); //指定命令执行失败
-                //     exit(1);
-                // } 
-
-                // //父进程操作
-                // else 
-                // {
-                //     wait(0); //等待子进程结束
-                // }
                 nargs--; // 移除添加的参数，以便下一次使用
             } 
 
@@ -56,12 +43,15 @@ int main(int argc, char *argv[])
             { //如果遇到空格或制表符，则将它们转换为NULL字符，作为参数分隔符
                 buf[i] = 0;
             }
+
+            //正常字符装入参数
             else
             {
                 args[nargs++] = &buf[i]; //将参数添加到参数列表中
                 while (!(buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\r' || buf[i] == '\n') && i < n) i++; //跳过单词，找到下一个分隔符
                 i--; //让下次循环能继续读取这个单词的字符
             }
+
             if (nargs >= MAXARG)
             { //参数个数超过最大限制
                 fprintf(2, "xargs: too many arguments\n");
@@ -78,6 +68,7 @@ if (nargs > argc - 1)
     // 子进程操作
     if (fork() == 0) {
         // 创建子进程，执行指定命令，并传递参数
+        //args[0]是xargs后面的命令，如echo
         exec(args[0], args); // 执行指定命令，并传递参数
         fprintf(2, "xargs: exec %s failed\n", args[0]); // 指定命令执行失败
         exit(1);
