@@ -8,6 +8,16 @@
 #include "proc.h"
 
 uint64
+sys_trace(void)
+{
+  int n;
+  if (argint(0, &n) < 0) // 判断参数是否获取成功
+    return -1;
+  myproc()->mask = n;    // 将argv[1]保存到当前进程的mask中
+  return 0;
+}
+
+uint64
 sys_exit(void)
 {
   int n;
