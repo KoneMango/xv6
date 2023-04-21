@@ -34,6 +34,7 @@ sys_sysinfo(void)
   info.freemem = freemem();
   info.nproc = nproc();
   // 将info结构体拷贝到用户态
+  // copyout 从内核态拷贝到用户态
   if (copyout(myproc()->pagetable, addr, (char *)&info, sizeof(info)) < 0)
     return -1;
   return 0;
