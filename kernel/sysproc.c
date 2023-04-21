@@ -23,7 +23,7 @@ sys_trace(void)
 
 
 uint64
-sys_info(void)
+sys_sysinfo(void)
 {
   struct sysinfo info; //储存系统信息
   uint64 addr; //存储用户态传入的sysinfo结构体地址
