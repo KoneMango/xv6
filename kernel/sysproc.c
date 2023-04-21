@@ -7,7 +7,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "sysinfo.h"
-#include "kalloc.c"
+// #include "kalloc.c"
 #include "proc.c"
 
 uint64
@@ -38,13 +38,6 @@ sys_info(void)
     return -1;
   return 0;
 
-
-  
-  
-
-
-
-  
 }
 
 uint64

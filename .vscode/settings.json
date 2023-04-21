@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "sysinfo.h": "c"
+        "sysinfo.h": "c",
+        "spinlock.h": "c"
     }
 }
