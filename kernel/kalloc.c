@@ -23,7 +23,7 @@ struct {
   struct run *freelist;
 } kmem;
 
-int
+uint64
 freemem()
 {
   int n = 0;
