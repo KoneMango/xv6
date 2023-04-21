@@ -7,6 +7,8 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "sysinfo.h"
+#include "kalloc.c"
+#include "proc.c"
 
 uint64
 sys_trace(void)
