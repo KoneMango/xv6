@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
 
 uint64
 sys_trace(void)
@@ -13,8 +14,35 @@ sys_trace(void)
   int n;
   if (argint(0, &n) < 0) // 判断参数是否获取成功
     return -1;
+  // 将argv[1]保存到当前进程的mask中
   myproc()->mask = n;    // 将argv[1]保存到当前进程的mask中
   return 0;
+}
+
+
+uint64
+sys_info(void)
+{
+  struct sysinfo info; //储存系统信息
+  uint64 addr; //存储用户态传入的sysinfo结构体地址
+  // 获取用户态传入的sysinfo结构体
+  // addr返回的是info的地址
+  if (argaddr(0, &addr) < 0) 
+    return -1;
+  info.freemem = freemem();
+  info.nproc = nproc();
+  // 将info结构体拷贝到用户态
+  if (copyout(myproc()->pagetable, addr, (char *)&info, sizeof(info)) < 0)
+    return -1;
+  return 0;
+
+
+  
+  
+
+
+
+  
 }
 
 uint64

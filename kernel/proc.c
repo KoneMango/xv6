@@ -44,6 +44,22 @@ procinit(void)
   kvminithart();
 }
 
+int
+nproc()
+{
+  struct proc *p;
+  int n = 0;
+
+//proc是进程数组
+  for(p = proc; p < &proc[NPROC]; p++) // NPROC: maximum number of processes
+  //如果不是unused 空进程，计数器+1
+    if(p->state != UNUSED)
+      n++;
+  return n;
+}
+
+
+
 // Must be called with interrupts disabled,
 // to prevent race with process being moved
 // to a different CPU.
