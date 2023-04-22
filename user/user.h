@@ -1,6 +1,6 @@
 struct stat;
 struct rtcdate;
-// struct sysinfo;
+struct sysinfo;
 
 // system calls
 int fork(void);
