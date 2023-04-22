@@ -58,21 +58,38 @@ kvminithart()
 
 void
 vmprint(pagetable_t pagetable)
+// {
+//   printf("page table %p\n", pagetable);
+//   for(int level = 0; level <= 2; level++){
+//     for (int i = 0 ; i<=level; i++){
+//       printf(".. ");
+//     }
+//     printf(":");
+//     // printf("  level: %d\n", level);
+//     for(int pte_i = 0; pte_i < 512; pte_i++){
+//       pte_t pte = pagetable[pte_i];
+//       //如果有效位显示有效
+//       if(pte & PTE_V){
+//         printf("pte %d: pa %p\n", pte_i, PTE2PA(pte));
+//       }
+//     }
+//   }
+// }
 {
-  printf("page table %p\n", pagetable);
-  for(int level = 2; level >= 0; level--){
-    for (int i = 0 ; i<=level; i++){
-      printf(".. ");
-    }
-    printf(":");
-    // printf("  level: %d\n", level);
-    for(int pte_i = 0; pte_i < 512; pte_i++){
-      pte_t pte = pagetable[pte_i];
-      if(pte & PTE_V){
-        printf("    pte %d: pa %p\n", pte_i, PTE2PA(pte));
-      }
+  // there are 2^9 = 512 PTEs in a page table.
+  for(int i = 0; i < 512; i++){
+    pte_t pte = pagetable[i];
+    if((pte & PTE_V) && (pte & (PTE_R|PTE_W|PTE_X)) == 0){
+      // this PTE points to a lower-level page table.
+      uint64 child = PTE2PA(pte);
+      printf("pa:%p", PTE2PA(pte) );
+      freewalk((pagetable_t)child);
+      pagetable[i] = 0;
+    } else if(pte & PTE_V){
+      panic("freewalk: leaf");
     }
   }
+  kfree((void*)pagetable);
 }
 
 // Return the address of the PTE in page table pagetable
