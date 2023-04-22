@@ -104,10 +104,12 @@ vmprint(pagetable_t pagetable )
 
             for (int j = 0; j < 512; j++) {
                 pte_t child_pte = child_pagetable[j];
+                //(PTE_R | PTE_W | PTE_X)==0 说明指向的是页表，而不是数据页，仅适用于xv6
                 if ((child_pte & PTE_V) && (child_pte & (PTE_R | PTE_W | PTE_X)) == 0) {
                     printf(".. ..%d: pte %p pa %p\n", j, child_pte, PTE2PA(child_pte));
+                    //child2是第三级页表的头指针
                     uint64 child2 = PTE2PA(child_pte);
-                    //child2是第三级页表的地址 是从第二级页表中取出的真实地址（child_pagetable2 对准三级页表的物理头地址）
+                    //child_pagetable2是第三级页表，是从第二级页表中取出的真实地址（child2 对准三级页表的物理头地址）
                     pagetable_t child_pagetable2 = (pagetable_t)child2;
                 for (int n = 0; n < 512; n++)
                 {
