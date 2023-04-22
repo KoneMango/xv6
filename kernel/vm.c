@@ -112,7 +112,7 @@ vmprint(pagetable_t pagetable )
                 for (int n = 0; n < 512; n++)
                 {
                   pte_t child_pte2 = child_pagetable2[n];
-                  if ((child_pte2 & PTE_V) && (child_pte2 & (PTE_R | PTE_W | PTE_X)) == 0) 
+                  if ((child_pte2 & PTE_V)) 
                   {
                       printf(".. .. ..%d: pte %p pa %p\n", n, child_pte2, PTE2PA(child_pte2));
                   }
