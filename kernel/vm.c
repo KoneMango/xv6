@@ -83,7 +83,7 @@ vmprint(pagetable_t pagetable)
       // this PTE points to a lower-level page table.
       uint64 child = PTE2PA(pte);
       printf("pa:%p", PTE2PA(pte) );
-      freewalk((pagetable_t)child);
+      vmprint((pagetable_t)child);
       pagetable[i] = 0;
     } else if(pte & PTE_V){
       panic("freewalk: leaf");
