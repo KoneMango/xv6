@@ -57,7 +57,7 @@ kvminithart()
 }
 
 void
-vmprint(pagetable_t pagetable)
+vmprint(pagetable_t pagetable )
 // {
 //   printf("page table %p\n", pagetable);
 //   for(int level = 0; level <= 2; level++){
@@ -75,20 +75,45 @@ vmprint(pagetable_t pagetable)
 //     }
 //   }
 // }
+
+
+// {
+//   // there are 2^9 = 512 PTEs in a page table.
+//   printf("page table %p\n", pagetable);
+//   for(int i = 0; i < 512; i++){
+//     pte_t pte = pagetable[i];
+//     if((pte & PTE_V) && (pte & (PTE_R|PTE_W|PTE_X)) == 0){
+//       // this PTE points to a lower-level page table.
+//       printf("pte:%p pa:%p\n",pte, PTE2PA(pte));
+//       uint64 child = PTE2PA(pte);
+//       vmprint((pagetable_t)child);
+//       pagetable[i] = 0;
+//     } 
+//   }
+//   kfree((void*)pagetable);
+// }
 {
-  // there are 2^9 = 512 PTEs in a page table.
-  printf("page table %p\n", pagetable);
-  for(int i = 0; i < 512; i++){
-    pte_t pte = pagetable[i];
-    if((pte & PTE_V) && (pte & (PTE_R|PTE_W|PTE_X)) == 0){
-      // this PTE points to a lower-level page table.
-      printf("pte:%p pa:%p\n",pte, PTE2PA(pte));
-      uint64 child = PTE2PA(pte);
-      vmprint((pagetable_t)child);
-      pagetable[i] = 0;
-    } 
-  }
-  kfree((void*)pagetable);
+    int pte_indices[] = {0, 255};
+    int pte_count = sizeof(pte_indices) / sizeof(pte_indices[0]);
+
+    printf("page table %p\n", pagetable);
+
+    for (int j = 0; j < pte_count; j++) {
+        int i = pte_indices[j];
+        pte_t pte = pagetable[i];
+        if ((pte & PTE_V) && (pte & (PTE_R | PTE_W | PTE_X)) == 0) {
+            printf("..%d: pte %p pa %p\n", i, pte, PTE2PA(pte));
+            uint64 child = PTE2PA(pte);
+            pagetable_t child_pagetable = (pagetable_t)child;
+
+            for (int k = 0; k < 512; k++) {
+                pte_t child_pte = child_pagetable[k];
+                if ((child_pte & PTE_V) && (child_pte & (PTE_R | PTE_W | PTE_X)) == 0) {
+                    printf(".. ..%d: pte %p pa %p\n", k, child_pte, PTE2PA(child_pte));
+                }
+            }
+        }
+    }
 }
 
 // Return the address of the PTE in page table pagetable
