@@ -93,27 +93,33 @@ vmprint(pagetable_t pagetable )
 //   kfree((void*)pagetable);
 // }
 {
-    int pte_indices[] = {0, 255};
-    int pte_count = sizeof(pte_indices) / sizeof(pte_indices[0]);
-
     printf("page table %p\n", pagetable);
 
-    for (int j = 0; j < pte_count; j++) {
-        int i = pte_indices[j];
+    for (int i = 0; i < 512; i++) {
         pte_t pte = pagetable[i];
         if ((pte & PTE_V) && (pte & (PTE_R | PTE_W | PTE_X)) == 0) {
             printf("..%d: pte %p pa %p\n", i, pte, PTE2PA(pte));
             uint64 child = PTE2PA(pte);
             pagetable_t child_pagetable = (pagetable_t)child;
 
-            for (int k = 0; k < 512; k++) {
-                pte_t child_pte = child_pagetable[k];
+            for (int j = 0; j < 512; j++) {
+                pte_t child_pte = child_pagetable[j];
                 if ((child_pte & PTE_V) && (child_pte & (PTE_R | PTE_W | PTE_X)) == 0) {
-                    printf(".. ..%d: pte %p pa %p\n", k, child_pte, PTE2PA(child_pte));
-                }
+                    printf(".. ..%d: pte %p pa %p\n", j, child_pte, PTE2PA(child_pte));
+                    uint64 child2 = PTE2PA(pte);
+                    pagetable_t child_pagetable2 = (pagetable_t)child;
+                for (int n = 0; n < 512; j++)
+                {
+                  pte_t child_pte2 = child_pagetable2[n];
+                  if ((child_pte2 & PTE_V) && (child_pte2 & (PTE_R | PTE_W | PTE_X)) == 0) 
+                  {
+                      printf(".. .. ..%d: pte %p pa %p\n", j, child_pte2, PTE2PA(child_pte2));
+                  }
+              }
             }
         }
     }
+}
 }
 
 // Return the address of the PTE in page table pagetable
