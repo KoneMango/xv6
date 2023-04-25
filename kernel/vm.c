@@ -5,7 +5,9 @@
 #include "riscv.h"
 #include "defs.h"
 #include "fs.h"
+#include "spinlock.h"
 #include "proc.h"
+
 
 /*
  * the kernel's page table.
@@ -15,6 +17,7 @@ pagetable_t kernel_pagetable;
 extern char etext[];  // kernel.ld sets this to end of kernel code.
 
 extern char trampoline[]; // trampoline.S
+
 
 
 // 待检查
