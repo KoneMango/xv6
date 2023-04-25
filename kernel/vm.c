@@ -28,6 +28,7 @@ kpt_init()
   pagetable_t kpt;
   //使用uvmcreate()函数创建一个新的内核页表。
   kpt  = uvmcreate();
+  if (kpt == 0) return 0;
   memset(kernel_pagetable, 0, PGSIZE);
   //仿照kvminit()
   // uart registers
