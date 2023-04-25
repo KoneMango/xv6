@@ -15,6 +15,47 @@ extern char etext[];  // kernel.ld sets this to end of kernel code.
 
 extern char trampoline[]; // trampoline.S
 
+
+// 待检查
+// 初始化内核里的用户页表，这个页表包含了内核里所有的用户进程的内存映射。
+void
+kpt_init()
+{
+  pagetable_t kpt;
+  //使用uvmcreate()函数创建一个新的内核页表。
+  kpt  = uvmcreate();
+  memset(kernel_pagetable, 0, PGSIZE);
+  //仿照kvminit()
+  // uart registers
+  uvmmap(kpt , UART0, UART0, PGSIZE, PTE_R | PTE_W);
+
+  // virtio mmio disk interface
+  uvmmap(kpt , VIRTIO0, VIRTIO0, PGSIZE, PTE_R | PTE_W);
+
+  // CLINT
+  uvmmap(kpt , CLINT, CLINT, 0x10000, PTE_R | PTE_W);
+
+  // PLIC
+  uvmmap(kpt , PLIC, PLIC, 0x400000, PTE_R | PTE_W);
+
+  // map kernel text executable and read-only.
+  uvmmap(kpt , KERNBASE, KERNBASE, (uint64)etext-KERNBASE, PTE_R | PTE_X);
+
+  // map kernel data and the physical RAM we'll make use of.
+  uvmmap(kpt , (uint64)etext, (uint64)etext, PHYSTOP-(uint64)etext, PTE_R | PTE_W);
+
+  // map the trampoline for trap entry/exit to
+  // the highest virtual address in the kernel.
+  uvmmap(kpt , TRAMPOLINE, (uint64)trampoline, PGSIZE, PTE_R | PTE_X);
+}
+
+// mappage创建映射关系
+void 
+uvmmap(pagetable_t pagetable, uint64 va, uint64 pa, uint64 sz, int perm)
+{
+mappages(pagetable, va, sz, pa, perm);
+}
+
 /*
  * create a direct-map page table for the kernel.
  */
@@ -55,6 +96,8 @@ kvminithart()
   w_satp(MAKE_SATP(kernel_pagetable));
   sfence_vma();
 }
+
+
 
 void
 vmprint(pagetable_t pagetable )

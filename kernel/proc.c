@@ -20,8 +20,9 @@ static void wakeup1(struct proc *chan);
 static void freeproc(struct proc *p);
 
 extern char trampoline[]; // trampoline.S
+extern pagetable_t kernel_pagetable;
 
-// initialize the proc table at boot time.
+// initialize the proc table at boot time. 
 void
 procinit(void)
 {
@@ -34,12 +35,13 @@ procinit(void)
       // Allocate a page for the process's kernel stack.
       // Map it high in memory, followed by an invalid
       // guard page.
-      char *pa = kalloc();
-      if(pa == 0)
-        panic("kalloc");
-      uint64 va = KSTACK((int) (p - proc));
-      kvmmap(va, (uint64)pa, PGSIZE, PTE_R | PTE_W);
-      p->kstack = va;
+
+      // char *pa = kalloc();
+      // if(pa == 0)
+      //   panic("kalloc");
+      // uint64 va = KSTACK((int) (p - proc));
+      // kvmmap(va, (uint64)pa, PGSIZE, PTE_R | PTE_W);
+      // p->kstack = va;
   }
   kvminithart();
 }
@@ -73,6 +75,8 @@ myproc(void) {
   return p;
 }
 
+
+//每次新的进程被创建出来以后执行以下这个函数，用来创建pcb块的
 int
 allocpid() {
   int pid;
@@ -121,6 +125,24 @@ found:
     return 0;
   }
 
+  // 运用一下刚刚写好的 初始化内核页表kpt_init()函数 ，
+  p->pagetable = kpt_init();
+  if(p->pagetable == 0){
+    freeproc(p);
+    release(&p->lock);
+    return 0;
+  }
+
+  // Allocate a page for the process's kernel stack.
+  // Map it high in memory, followed by an invalid
+  // guard page.
+  char *pa = kalloc();
+  if(pa == 0)
+    panic("kalloc");
+  uint64 va = KSTACK((int) (p - proc));
+  //
+  uvmmap(p->kernelpt, va, (uint64)pa, PGSIZE, PTE_R | PTE_W);
+  p->kstack = va;
   // Set up new context to start executing at forkret,
   // which returns to user space.
   memset(&p->context, 0, sizeof(p->context));
@@ -136,11 +158,29 @@ found:
 static void
 freeproc(struct proc *p)
 {
+  // 释放进程的内核栈
   if(p->trapframe)
     kfree((void*)p->trapframe);
   p->trapframe = 0;
+  //释放kernel stack
+  //如果进程有内核栈
+  if(p->kstack){
+    //pte等于根据kernelpt查找到的kstack对应的地址的指针
+    pte_t* pte = walk(p->kernelpt, p->kstack, 0);
+    //如果pte等于0，说明没有找到对应的内核页表
+    if (pte == 0)
+      panic("freeproc: kstack");
+    //如果pte不等于0，说明找到了对应的内核页表，那么就释放这个内核页表，记得*pte解指针
+    kfree((void*)PTE2PA(*pte));
+  }
+
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
+  //释放pagetable
+  if(p->kernelpt)
+    proc_freekpt(p->kernelpt);
+
+
   p->pagetable = 0;
   p->sz = 0;
   p->pid = 0;
@@ -183,6 +223,26 @@ proc_pagetable(struct proc *p)
   }
 
   return pagetable;
+}
+
+//释放kpt，模仿vm.c 中的freewalk函数
+void
+proc_freekpt(pagetable_t pagetable)
+{
+  // there are 2^9 = 512 PTEs in a page table.
+  for(int i = 0; i < 512; i++){
+    pte_t pte = pagetable[i];
+    //如果pte有效，并且叶子节点也应该被释放，去除(pte & (PTE_R|PTE_W|PTE_X)) == 0
+    if(pte & PTE_V){
+      // this PTE points to a lower-level page table.
+      uint64 child = PTE2PA(pte);
+      proc_freekpt((pagetable_t)child);
+      pagetable[i] = 0;
+    } else if(pte & PTE_V){
+      panic("freekpt: leaf");
+    }
+  }
+  kfree((void*)pagetable);
 }
 
 // Free a process's page table, and free the
@@ -453,26 +513,41 @@ wait(uint64 addr)
 //  - swtch to start running that process.
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
+
+
+// 修改此函数，使得内核根据kernelpt来进行内存地址的转换（没有进程运行的时候用自己的kernel_pagetable）
 void
 scheduler(void)
 {
+  // 获得当前CPU的指针
   struct proc *p;
   struct cpu *c = mycpu();
   
   c->proc = 0;
+
+  //始终在运行阶段
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
+    // 打开终端
     intr_on();
     
     int found = 0;
     for(p = proc; p < &proc[NPROC]; p++) {
+      //遍历所有的进程，并使用acquire加锁，找到一个RUNNABLE的进程
       acquire(&p->lock);
+      //如果是RUNNABLE 可运行的
       if(p->state == RUNNABLE) {
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
+        // 将当前的kernel page放入satp寄存器中
         p->state = RUNNING;
         c->proc = p;
+
+        w_satp(MAKE_SATP(p->kernelpt));
+        //使得TLB失效，从而保证最新的页表被使用
+        sfence_vma();
+
         swtch(&c->context, &p->context);
 
         // Process is done running for now.
@@ -486,6 +561,9 @@ scheduler(void)
 #if !defined (LAB_FS)
     if(found == 0) {
       intr_on();
+      //没有找到需要运行的进程,用自己的pagetable
+      w_satp(MAKE_SATP(kernel_pagetable));
+      sfence_vma();
       asm volatile("wfi");
     }
 #else
