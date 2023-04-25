@@ -241,7 +241,7 @@ proc_freekpt(pagetable_t pagetable)
       pagetable[i] = 0;
       //如果这个pte指向的是一个页,转换成物理地址
 
-      if (pte & (PTE_R|PTE_W|PTE_X) == 0)
+      if ((pte & (PTE_R|PTE_W|PTE_X)) == 0)
       {
       uint64 child = PTE2PA(pte);
       proc_freekpt((pagetable_t)child);
