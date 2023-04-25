@@ -7,6 +7,7 @@
 #include "fs.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "vmcopyin.c"
 
 
 /*
@@ -190,6 +191,8 @@ vmprint(pagetable_t pagetable )
 //   21..29 -- 9 bits of level-1 index.
 //   12..20 -- 9 bits of level-0 index.
 //    0..11 -- 12 bits of byte offset within the page.
+
+//walk函数根据页表和虚拟地址，找到最底层页表的页表项的头指针
 pte_t *
 walk(pagetable_t pagetable, uint64 va, int alloc)
 {
@@ -501,23 +504,57 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
 int
 copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
 {
-  uint64 n, va0, pa0;
+  // uint64 n, va0, pa0;
 
-  while(len > 0){
-    va0 = PGROUNDDOWN(srcva);
-    pa0 = walkaddr(pagetable, va0);
-    if(pa0 == 0)
-      return -1;
-    n = PGSIZE - (srcva - va0);
-    if(n > len)
-      n = len;
-    memmove(dst, (void *)(pa0 + (srcva - va0)), n);
+  // while(len > 0){
+  //   va0 = PGROUNDDOWN(srcva);
+  //   pa0 = walkaddr(pagetable, va0);
+  //   if(pa0 == 0)
+  //     return -1;
+  //   n = PGSIZE - (srcva - va0);
+  //   if(n > len)
+  //     n = len;
+  //   memmove(dst, (void *)(pa0 + (srcva - va0)), n);
 
-    len -= n;
-    dst += n;
-    srcva = va0 + PGSIZE;
+  //   len -= n;
+  //   dst += n;
+  //   srcva = va0 + PGSIZE;
+  // }
+  // return 0;
+
+  // 替换为新的copyin函数
+  return copyin_new(pagetable, dst, srcva, len);
+}
+
+void
+copyfromU2K(pagetable_t pagetable , pagetable_t kpagetable, uint64 oldsize, uint64 newsize){
+
+  pte_t *pte_from;
+  pte_t *pte_to;
+  uint64 pa_from;
+  uint64 flags ; 
+
+  if (newsize > oldsize){
+    panic("copyfromU2K: newsize > oldsize");
   }
-  return 0;
+
+  oldsize = PGROUNDUP(oldsize);
+  for (uint64 i = oldsize ; i == newsize; i= i+ PGSIZE){
+    //walk 找到虚拟地址的页表项 并放置指针，准备修改
+    //当调用walk函数时，它会首先遍历顶级页表，
+    //然后是中间级别的页表，最后是底层的页表。这个过程会找到与给定虚拟地址对应的页表项（PTE），并返回一个指向它的指针。
+    pte_t *pte_from = walk(pagetable, i, 0);
+    pte_t *pte = walk(kpagetable, i, 0);
+
+    //取出pa，执行转换操作
+    pa_from = PTE2PA(*pte_from);
+
+    //取出flag 并取反PTE_U 取消其用户权限（因为已经在kernel mode了）
+    flags = (PTE_FLAGS(*pte_from) & (~PTE_U));
+    pte_to = PA2PTE(pa_from) | flags;
+    
+  }
+
 }
 
 // Copy a null-terminated string from user to kernel.
@@ -527,38 +564,41 @@ copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
 int
 copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
 {
-  uint64 n, va0, pa0;
-  int got_null = 0;
+  // uint64 n, va0, pa0;
+  // int got_null = 0;
 
-  while(got_null == 0 && max > 0){
-    va0 = PGROUNDDOWN(srcva);
-    pa0 = walkaddr(pagetable, va0);
-    if(pa0 == 0)
-      return -1;
-    n = PGSIZE - (srcva - va0);
-    if(n > max)
-      n = max;
+  // while(got_null == 0 && max > 0){
+  //   va0 = PGROUNDDOWN(srcva);
+  //   pa0 = walkaddr(pagetable, va0);
+  //   if(pa0 == 0)
+  //     return -1;
+  //   n = PGSIZE - (srcva - va0);
+  //   if(n > max)
+  //     n = max;
 
-    char *p = (char *) (pa0 + (srcva - va0));
-    while(n > 0){
-      if(*p == '\0'){
-        *dst = '\0';
-        got_null = 1;
-        break;
-      } else {
-        *dst = *p;
-      }
-      --n;
-      --max;
-      p++;
-      dst++;
-    }
+  //   char *p = (char *) (pa0 + (srcva - va0));
+  //   while(n > 0){
+  //     if(*p == '\0'){
+  //       *dst = '\0';
+  //       got_null = 1;
+  //       break;
+  //     } else {
+  //       *dst = *p;
+  //     }
+  //     --n;
+  //     --max;
+  //     p++;
+  //     dst++;
+  //   }
 
-    srcva = va0 + PGSIZE;
-  }
-  if(got_null){
-    return 0;
-  } else {
-    return -1;
-  }
+  //   srcva = va0 + PGSIZE;
+  // }
+  // if(got_null){
+  //   return 0;
+  // } else {
+  //   return -1;
+  // }
+  
+  // 替换为新的copyinstr
+  return copyinstr_new(pagetable, dst, srcva, max);
 }

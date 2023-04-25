@@ -314,12 +314,20 @@ growproc(int n)
 
   sz = p->sz;
   if(n > 0){
+    //检查有没有覆盖PLIC地址，覆盖就返回-1
+    if (PGROUNDUP(sz + n) >= PLIC) {
+      return -1;
+    }
+    //在这里sz被更新为uvmalloc的返回值
     if((sz = uvmalloc(p->pagetable, sz, sz + n)) == 0) {
       return -1;
     }
+    //old是sz - n ，new是sz
+    copyfromU2K(p->pagetable, p -> kernelpt, sz - n, sz);
   } else if(n < 0){
     sz = uvmdealloc(p->pagetable, sz, sz + n);
   }
+  // 赋值给结构体成员
   p->sz = sz;
   return 0;
 }
@@ -359,6 +367,10 @@ fork(void)
     if(p->ofile[i])
       np->ofile[i] = filedup(p->ofile[i]);
   np->cwd = idup(p->cwd);
+
+
+  //把用户进程映射表复制到内核中，用刚写的函数
+  copyfromU2K(np->pagetable, np->kernelpt, 0, np->sz);
 
   safestrcpy(np->name, p->name, sizeof(p->name));
 

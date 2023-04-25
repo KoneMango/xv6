@@ -161,6 +161,7 @@ int             uartgetc(void);
 // vm.c
 void            vmprint(pagetable_t pagetable);
 pte_t *         walk(pagetable_t pagetable, uint64 va, int alloc);
+void            copyfromU2K(pagetable_t pagetable , pagetable_t kpagetable, uint64 oldsize, uint64 newsize);
 void            kvminit(void);
 pagetable_t     kpt_init();
 void            uvmmap(pagetable_t pagetable, uint64 va, uint64 pa, uint64 sz, int perm);
