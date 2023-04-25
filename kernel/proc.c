@@ -178,7 +178,7 @@ freeproc(struct proc *p)
 
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
-
+    
   //释放pagetable
   if(p->kernelpt)
     proc_freekpt(p->kernelpt);
@@ -228,23 +228,28 @@ proc_pagetable(struct proc *p)
   return pagetable;
 }
 
-//释放kpt，模仿vm.c 中的freewalk函数
-//TODO
-void 
+//释放kpt，模仿vm.c 中的freewalk函数，
+void
 proc_freekpt(pagetable_t pagetable)
 {
   // there are 2^9 = 512 PTEs in a page table.
   for(int i = 0; i < 512; i++){
     pte_t pte = pagetable[i];
-    if((pte & PTE_V)){
+    //如果pte有效
+    if(pte & PTE_V){
+      //变成0，防止悬挂指针
       pagetable[i] = 0;
-      if ((pte & (PTE_R|PTE_W|PTE_X)) == 0)
+      //如果这个pte指向的是一个页,转换成物理地址
+
+      if ((PTE_R|PTE_W|PTE_X) == 0)
       {
-        uint64 child = PTE2PA(pte);
-        proc_freekpt((pagetable_t)child);
+      uint64 child = PTE2PA(pte);
+      proc_freekpt((pagetable_t)child);
       }
+      // this PTE points to a lower-level page table.
+
     } else if(pte & PTE_V){
-      panic("proc free kpt: leaf");
+      panic("freekpt: leaf");
     }
   }
   kfree((void*)pagetable);
