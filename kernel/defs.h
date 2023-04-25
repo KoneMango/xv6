@@ -109,7 +109,7 @@ int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 void            proc_freekpt(pagetable_t pagetable);     
-void            freeproc(struct proc *p);
+static void     freeproc(struct proc *p);
 // swtch.S
 void            swtch(struct context*, struct context*);
 
@@ -160,7 +160,9 @@ int             uartgetc(void);
 
 // vm.c
 void            vmprint(pagetable_t pagetable);
+pte_t *         walk(pagetable_t pagetable, uint64 va, int alloc);
 void            kvminit(void);
+pagetable_t     kpt_init();
 void            uvmmap(pagetable_t pagetable, uint64 va, uint64 pa, uint64 sz, int perm);
 void            kvminithart(void);
 uint64          kvmpa(uint64);

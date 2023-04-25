@@ -18,7 +18,7 @@ extern char trampoline[]; // trampoline.S
 
 // 待检查
 // 初始化内核里的用户页表，这个页表包含了内核里所有的用户进程的内存映射。
-void
+pagetable_t
 kpt_init()
 {
   pagetable_t kpt;

@@ -126,8 +126,8 @@ found:
   }
 
   // 运用一下刚刚写好的 初始化内核页表kpt_init()函数 ，
-  p->pagetable = kpt_init();
-  if(p->pagetable == 0){
+  p->kernelpt = kpt_init();
+  if (p->kernelpt == 0){
     freeproc(p);
     release(&p->lock);
     return 0;
