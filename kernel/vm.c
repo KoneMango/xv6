@@ -47,6 +47,8 @@ kpt_init()
   // map the trampoline for trap entry/exit to
   // the highest virtual address in the kernel.
   uvmmap(kpt , TRAMPOLINE, (uint64)trampoline, PGSIZE, PTE_R | PTE_X);
+
+  return kpt;
 }
 
 // mappage创建映射关系
