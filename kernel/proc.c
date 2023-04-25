@@ -140,7 +140,7 @@ found:
   if(pa == 0)
     panic("kalloc");
   uint64 va = KSTACK((int) (p - proc));
-  //
+  // 添加映射到用户的kernel pagetable里
   uvmmap(p->kernelpt, va, (uint64)pa, PGSIZE, PTE_R | PTE_W);
   p->kstack = va;
   // Set up new context to start executing at forkret,
@@ -173,6 +173,7 @@ freeproc(struct proc *p)
     //如果pte不等于0，说明找到了对应的内核页表，那么就释放这个内核页表，记得*pte解指针
     kfree((void*)PTE2PA(*pte));
   }
+  p->kstack = 0;
 
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);

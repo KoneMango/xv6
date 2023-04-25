@@ -29,7 +29,9 @@ kpt_init()
   //使用uvmcreate()函数创建一个新的内核页表。
   kpt  = uvmcreate();
   if (kpt == 0) return 0;
-  memset(kernel_pagetable, 0, PGSIZE);
+
+  // memset(kernel_pagetable, 0, PGSIZE);
+
   //仿照kvminit()
   // uart registers
   uvmmap(kpt , UART0, UART0, PGSIZE, PTE_R | PTE_W);
@@ -60,7 +62,8 @@ kpt_init()
 void 
 uvmmap(pagetable_t pagetable, uint64 va, uint64 pa, uint64 sz, int perm)
 {
-mappages(pagetable, va, sz, pa, perm);
+int check = mappages(pagetable, va, sz, pa, perm);
+if (check != 0) panic("uvmmap: out of memory");
 }
 
 /*
