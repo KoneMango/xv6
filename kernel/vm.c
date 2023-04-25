@@ -7,7 +7,7 @@
 #include "fs.h"
 #include "spinlock.h"
 #include "proc.h"
-#include "vmcopyin.c"
+// #include "vmcopyin.c"
 
 
 /*
