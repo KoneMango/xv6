@@ -173,10 +173,12 @@ freeproc(struct proc *p)
     //如果pte不等于0，说明找到了对应的内核页表，那么就释放这个内核页表，记得*pte解指针
     kfree((void*)PTE2PA(*pte));
   }
+  //TODO 释放内核页表
   p->kstack = 0;
 
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
+
   //释放pagetable
   if(p->kernelpt)
     proc_freekpt(p->kernelpt);
@@ -227,20 +229,22 @@ proc_pagetable(struct proc *p)
 }
 
 //释放kpt，模仿vm.c 中的freewalk函数
-void
+//TODO
+void 
 proc_freekpt(pagetable_t pagetable)
 {
   // there are 2^9 = 512 PTEs in a page table.
   for(int i = 0; i < 512; i++){
     pte_t pte = pagetable[i];
-    //如果pte有效，并且叶子节点也应该被释放，去除(pte & (PTE_R|PTE_W|PTE_X)) == 0
-    if(pte & PTE_V){
-      // this PTE points to a lower-level page table.
-      uint64 child = PTE2PA(pte);
-      proc_freekpt((pagetable_t)child);
+    if((pte & PTE_V)){
       pagetable[i] = 0;
+      if ((pte & (PTE_R|PTE_W|PTE_X)) == 0)
+      {
+        uint64 child = PTE2PA(pte);
+        proc_freekpt((pagetable_t)child);
+      }
     } else if(pte & PTE_V){
-      panic("freekpt: leaf");
+      panic("proc free kpt: leaf");
     }
   }
   kfree((void*)pagetable);
