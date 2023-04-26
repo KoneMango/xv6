@@ -531,13 +531,14 @@ copyfromU2K(pagetable_t pagetable , pagetable_t kpagetable, uint64 oldsize, uint
   pte_t *pte_from;
   pte_t *pte_to;
   uint64 pa_from;
-  uint64 flags ; 
+  uint flags ; 
 
   if (oldsize > newsize){
     return;
   }
 
   oldsize = PGROUNDUP(oldsize);
+
   for (uint64 i = oldsize ; i < newsize; i= i+ PGSIZE){
     //walk 找到虚拟地址的页表项 并放置指针，准备修改
     //当调用walk函数时，它会首先遍历顶级页表，
@@ -546,19 +547,18 @@ copyfromU2K(pagetable_t pagetable , pagetable_t kpagetable, uint64 oldsize, uint
     pte_to = walk(kpagetable, i, 1);
 
     if (pte_from == 0 || pte_to == 0) {
-      panic("copyfromU2K error");
+      panic("copyfromU2K walk error");
   // Handle the error case, e.g., print an error message or stop the process.
 }
 
     //取出pa，执行转换操作
     pa_from = PTE2PA(*pte_from);
 
+
     //取出flag 并取反PTE_U 取消其用户权限（因为已经在kernel mode了）
     flags = (PTE_FLAGS(*pte_from) & (~PTE_U));
     *pte_to = PA2PTE(pa_from) | flags;
-    
   }
-
 }
 
 // Copy a null-terminated string from user to kernel.
