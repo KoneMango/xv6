@@ -13,6 +13,10 @@ struct mbuf;
 struct sock;
 #endif
 
+//vmcopyin.c
+int             copyin_new(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
+int             copyinstr_new(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
+
 // bio.c
 void            binit(void);
 struct buf*     bread(uint, uint);
