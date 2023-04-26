@@ -545,6 +545,11 @@ copyfromU2K(pagetable_t pagetable , pagetable_t kpagetable, uint64 oldsize, uint
     pte_from = walk(pagetable, i, 0);
     pte_to = walk(kpagetable, i, 1);
 
+    if (pte_from == 0 || pte_to == 0) {
+      panic("copyfromU2K error");
+  // Handle the error case, e.g., print an error message or stop the process.
+}
+
     //取出pa，执行转换操作
     pa_from = PTE2PA(*pte_from);
 
