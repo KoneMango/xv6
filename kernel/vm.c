@@ -533,8 +533,8 @@ copyfromU2K(pagetable_t pagetable , pagetable_t kpagetable, uint64 oldsize, uint
   uint64 pa_from;
   uint64 flags ; 
 
-  if (newsize > oldsize){
-    panic("copyfromU2K: newsize > oldsize");
+  if (oldsize > newsize){
+    panic("copyfromU2K: oldsize > newsize");
   }
 
   oldsize = PGROUNDUP(oldsize);
