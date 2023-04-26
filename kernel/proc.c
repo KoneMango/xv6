@@ -326,6 +326,7 @@ growproc(int n)
     }
     //old是sz - n ，new是sz
     copyfromU2K(p->pagetable, p -> kernelpt, sz - n, sz);
+    
   } else if(n < 0){
     sz = uvmdealloc(p->pagetable, sz, sz + n);
   }
