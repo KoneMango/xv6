@@ -528,36 +528,56 @@ copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
 void
 copyfromU2K(pagetable_t pagetable , pagetable_t kpagetable, uint64 oldsize, uint64 newsize){
 
-  pte_t *pte_from;
-  pte_t *pte_to;
-  uint64 pa_from;
-  uint flags ; 
+//   pte_t *pte_from;
+//   pte_t *pte_to;
+//   uint64 pa_from;
+//   uint flags ; 
+//   uint64 i;
 
-  if (oldsize > newsize){
+//   if (oldsize > newsize){
+//     return;
+//   }
+
+//   oldsize = PGROUNDUP(oldsize);
+
+//   for (i = oldsize ; i < newsize; i= i+ PGSIZE){
+//     //walk 找到虚拟地址的页表项 并放置指针，准备修改
+//     //当调用walk函数时，它会首先遍历顶级页表，
+//     //然后是中间级别的页表，最后是底层的页表。这个过程会找到与给定虚拟地址对应的页表项（PTE），并返回一个指向它的指针。
+//     pte_from = walk(pagetable, i, 0);
+//     pte_to = walk(kpagetable, i, 1);
+
+//     if (pte_from == 0 || pte_to == 0) {
+//       panic("copyfromU2K walk error");
+//   // Handle the error case, e.g., print an error message or stop the process.
+// }
+
+//     //取出pa，执行转换操作
+//     pa_from = PTE2PA(*pte_from);
+
+
+//     //取出flag 并取反PTE_U 取消其用户权限（因为已经在kernel mode了）
+//     flags = (PTE_FLAGS(*pte_from) & (~PTE_U));
+//     *pte_to = PA2PTE(pa_from) | flags;
+//   }
+  pte_t *pte_from, *pte_to;
+  uint64 a, pa;
+  uint flags;
+
+  if (newsize < oldsize)
     return;
-  }
-
+  
   oldsize = PGROUNDUP(oldsize);
-
-  for (uint64 i = oldsize ; i < newsize; i= i+ PGSIZE){
-    //walk 找到虚拟地址的页表项 并放置指针，准备修改
-    //当调用walk函数时，它会首先遍历顶级页表，
-    //然后是中间级别的页表，最后是底层的页表。这个过程会找到与给定虚拟地址对应的页表项（PTE），并返回一个指向它的指针。
-    pte_from = walk(pagetable, i, 0);
-    pte_to = walk(kpagetable, i, 1);
-
-    if (pte_from == 0 || pte_to == 0) {
-      panic("copyfromU2K walk error");
-  // Handle the error case, e.g., print an error message or stop the process.
-}
-
-    //取出pa，执行转换操作
-    pa_from = PTE2PA(*pte_from);
-
-
-    //取出flag 并取反PTE_U 取消其用户权限（因为已经在kernel mode了）
+  for (a = oldsize; a < newsize; a += PGSIZE)
+  {
+    if ((pte_from = walk(pagetable, a, 0)) == 0)
+      panic("u2kvmcopy: pte should exist");
+    if ((pte_to = walk(kpagetable, a, 1)) == 0)
+      panic("u2kvmcopy: walk fails");
+    pa = PTE2PA(*pte_from);
+    // 清除PTE_U的标记位
     flags = (PTE_FLAGS(*pte_from) & (~PTE_U));
-    *pte_to = PA2PTE(pa_from) | flags;
+    *pte_to = PA2PTE(pa) | flags;
   }
 }
 
