@@ -317,16 +317,15 @@ growproc(int n)
   sz = p->sz;
   if(n > 0){
     //检查有没有覆盖PLIC地址，覆盖就返回-1
-    if (PGROUNDUP(sz + n) >= PLIC) {
+    if (PGROUNDUP(sz + n) >= PLIC) 
       return -1;
-    }
     //在这里sz被更新为uvmalloc的返回值
     if((sz = uvmalloc(p->pagetable, sz, sz + n)) == 0) {
       return -1;
     }
     //old是sz - n ，new是sz
     copyfromU2K(p->pagetable, p -> kernelpt, sz - n, sz);
-    
+
   } else if(n < 0){
     sz = uvmdealloc(p->pagetable, sz, sz + n);
   }
