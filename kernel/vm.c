@@ -543,7 +543,7 @@ copyfromU2K(pagetable_t pagetable , pagetable_t kpagetable, uint64 oldsize, uint
     //当调用walk函数时，它会首先遍历顶级页表，
     //然后是中间级别的页表，最后是底层的页表。这个过程会找到与给定虚拟地址对应的页表项（PTE），并返回一个指向它的指针。
     pte_from = walk(pagetable, i, 0);
-    pte_to = walk(kpagetable, i, i);
+    pte_to = walk(kpagetable, i, 1);
 
     //取出pa，执行转换操作
     pa_from = PTE2PA(*pte_from);
