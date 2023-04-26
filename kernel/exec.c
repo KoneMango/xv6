@@ -76,7 +76,7 @@ exec(char *path, char **argv)
   stackbase = sp - PGSIZE;
 
   //复制到kernelpt
-  copyfromU2K(p -> pagetable, p -> kernelpt, 0 ,sz);
+  copyfromU2K(pagetable, p -> kernelpt, 0 ,sz);
 
   // Push argument strings, prepare rest of stack in ustack.
   for(argc = 0; argv[argc]; argc++) {
