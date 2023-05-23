@@ -141,8 +141,7 @@ backtrace(void)
   printf("backtrace:\n");
   fp = (uint64*)r_fp();
   while(fp){
-    printf("  fp %p  ra %p  args %p %p %p %p %p\n",
-           fp, fp[1], fp[2], fp[3], fp[4], fp[5], fp[6]);
+    printf("  fp %p " ,fp );
   }
 
   
