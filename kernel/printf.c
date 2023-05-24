@@ -133,18 +133,13 @@ printfinit(void)
   pr.locking = 1;
 }
 
-void
-backtrace(void)
-{
+void backtrace(void) {
   // backtrace current process's stack.
-  uint64 *fp;
   printf("backtrace:\n");
-  fp = (uint64) r_fp();
+  uint64 fp = r_fp();
   unsigned int top = PGROUNDUP((uint64)fp);
-  for(; fp<top; fp = (uint64 *)(&fp+16)){
-    printf("0x%x\n",*fp);
+
+  for (; fp < top; fp = *(uint64 **)fp + 2) {
+    printf("0x%lx\n", (uint64)fp);
   }
-
-  
-
 }
