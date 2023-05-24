@@ -141,7 +141,7 @@ backtrace(void)
   printf("backtrace:\n");
   fp = (uint64*)r_fp();
   unsigned int top = (uint64*)PGROUNDUP((uint64)fp);
-  for(;fp<top;fp = fp + 16){
+  for(;*fp<top;fp = fp + 16){
     printf("0x%x\n",*fp);
   }
 
