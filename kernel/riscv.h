@@ -319,7 +319,7 @@ sfence_vma()
   asm volatile("sfence.vma zero, zero");
 }
 
-// read the register
+// read the register(add)
 static inline uint64
 r_fp()
 {
