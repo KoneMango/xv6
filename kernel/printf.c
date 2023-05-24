@@ -140,8 +140,9 @@ backtrace(void)
   uint64 *fp;
   printf("backtrace:\n");
   fp = (uint64*)r_fp();
-  while(fp){
-    printf("  fp %p " ,fp );
+  unsigned int top = (uint64*)PGROUNDUP((uint64)fp);
+  for(;fp<top;fp = fp + 16){
+    printf("0x%x\n",*fp);
   }
 
   
