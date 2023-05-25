@@ -3,6 +3,7 @@
 //
 
 #include <stdarg.h>
+#include <stddef.h>
 
 #include "types.h"
 #include "param.h"
@@ -139,8 +140,11 @@ void backtrace(void) {
   uint64 rip;
   uint64* fp = (uint64*)r_fp();
   while (fp){
+    if (fp !=NULL){
     rip = *(fp-1);
-    printf("return to 0x%p\n", rip);
+    printf("return to %p\n", rip);
     fp = (uint64*) *fp;
+    }
+
   }
 }
