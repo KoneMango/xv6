@@ -139,11 +139,11 @@ void backtrace(void) {
   printf("backtrace:\n");
   uint64 rip;
   uint64* fp = (uint64*)r_fp();
-  while (fp){
+  uint64* top = (uint64*)PGROUNDUP((uint64)fp);
+  for (fp ; top < fp; fp = (uint64*) *fp){
     if (fp !=NULL){
     rip = *(fp-1);
     printf("return to %p\n", rip);
-    fp = (uint64*) *fp;
     }
 
   }
