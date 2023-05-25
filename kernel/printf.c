@@ -139,7 +139,7 @@ void backtrace(void) {
   uint64 rip;
   uint64* fp = (uint64*)r_fp();
   while (fp){
-    rip = *(fp-1);
+    rip = *(fp+1);
     printf("return to 0x%x\n", rip);
     fp = (uint64*) *fp;
   }
