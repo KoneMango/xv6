@@ -137,7 +137,7 @@ void backtrace(void) {
   // backtrace current process's stack.
   printf("backtrace:\n");
   uint64 rip;
-  uint64* fp = r_fp();
+  uint64* fp = (uint64*)r_fp();
   while (fp){
     rip = *(fp-1);
     printf("return to 0x%x\n", rip);
