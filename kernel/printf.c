@@ -136,10 +136,11 @@ printfinit(void)
 void backtrace(void) {
   // backtrace current process's stack.
   printf("backtrace:\n");
-  uint64 fp = r_fp();
-  unsigned int top = PGROUNDUP((uint64)fp);
-
-  for (; fp < top; fp = *(uint64 **)fp + 2) {
-    printf("0x%lx\n", (uint64)fp);
+  uint rip
+  uint64* fp = r_fp();
+  while (fp){
+    rip = *(fp-1);
+    printf("return to 0x%x\n", rip);
+    fp = (uint64*) *fp;
   }
 }

@@ -324,6 +324,7 @@ static inline uint64
 r_fp()
 {
   uint64 x;
+  //获取了s0的值，s0的值就是帧指针的值
   asm volatile("mv %0, s0" : "=r" (x) );
   return x;
 }
